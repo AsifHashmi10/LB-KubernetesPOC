@@ -55,10 +55,11 @@ metadata:
   name: keycloak
   namespace: loyality-net
 spec:
+  type: NodePort
   selector:
-    app: keycloak
+    app: keycloak # make sure this matches your Keycloak pod labels
   ports:
     - name: http
       port: 8080
       targetPort: 8080
-  type: ClusterIP
+      nodePort: 30081 # choose a free port between 30000–32767
