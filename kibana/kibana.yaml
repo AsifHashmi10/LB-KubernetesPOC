@@ -21,12 +21,10 @@ spec:
           env:
             - name: ELASTICSEARCH_HOSTS
               value: "https://elasticsearch:9200"
-            - name: ELASTICSEARCH_USERNAME
-              value: "elastic"
-            - name: ELASTICSEARCH_PASSWORD
-              value: "manage" # make sure this matches ES
+            - name: ELASTICSEARCH_SERVICEACCOUNTTOKEN
+              value: "AAEAAWVsYXN0aWMva2liYW5hL2tpYmFuYS1zZXJ2aWNlLXRva2VuOkVSdGtEekFqUmppRlhoZWgxSGVXTXc"
             - name: ELASTICSEARCH_SSL_VERIFICATIONMODE
-              value: "none" # case-sensitive!
+              value: "none"
 ---
 apiVersion: v1
 kind: Service
