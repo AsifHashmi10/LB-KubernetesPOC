@@ -25,7 +25,7 @@ metadata:
   name: nginx
   namespace: loyality-net
 spec:
-  type: NodePort # Use LoadBalancer if on cloud, NodePort for local cluster
+  type: LoadBalancer # Use LoadBalancer if on cloud, NodePort for local cluster
   selector:
     app: nginx
   ports:
