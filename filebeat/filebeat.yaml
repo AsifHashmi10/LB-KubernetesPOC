@@ -15,6 +15,7 @@ data:
 
     output.logstash:
       hosts: ["logstash:5044"]
+      api_key: "d0dJS3g1Z0JLS0kxYzFXOEtpeGs6dTVuMnJCLWNSN2Vpd21WODZiMFZaZw=="
 ---
 apiVersion: apps/v1
 kind: DaemonSet
