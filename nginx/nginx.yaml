@@ -25,10 +25,11 @@ metadata:
   name: nginx
   namespace: loyality-net
 spec:
-  type: LoadBalancer # Use LoadBalancer if on cloud, NodePort for local cluster
+  type: NodePort
   selector:
     app: nginx
   ports:
-    - port: 80 # Cluster IP port
-      targetPort: 80 # Container port
-      nodePort: 30080 # Node port to access externally (only for NodePort type)
+    - name: http
+      port: 80
+      targetPort: 80
+      nodePort: 30080 # fixed NodePort bound on Fedora VM
