@@ -1,3 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: filebeat-config
+  namespace: loyality-net
+data:
+  filebeat.yml: |
+    filebeat.inputs:
+      - type: log
+        enabled: true
+        paths:
+          - /var/log/*.log
+          - /var/log/messages
+          - /var/log/syslog
+
+    output.logstash:
+      hosts: ["logstash:5044"]
+---
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
@@ -15,12 +33,18 @@ spec:
       containers:
         - name: filebeat
           image: docker.elastic.co/beats/filebeat:8.15.0
-          args: ["-e", "-E", 'output.logstash.hosts=["logstash:5044"]']
+          args: ["-e", "-c", "/usr/share/filebeat/filebeat.yml"]
           volumeMounts:
+            - name: config
+              mountPath: /usr/share/filebeat/filebeat.yml
+              subPath: filebeat.yml
             - name: varlog
               mountPath: /var/log
               readOnly: true
       volumes:
+        - name: config
+          configMap:
+            name: filebeat-config
         - name: varlog
           hostPath:
             path: /var/log
