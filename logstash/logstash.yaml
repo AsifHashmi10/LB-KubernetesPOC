@@ -44,10 +44,9 @@ data:
         user => "elastic"
         password => "ZqYCrBsYu3kejHaaXYe1"
         ssl => true
-        ssl_certificate_verification => false
+        ssl_verification_mode => none
       }
     }
-
 ---
 apiVersion: v1
 kind: Service
