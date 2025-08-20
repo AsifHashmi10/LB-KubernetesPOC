@@ -1,13 +1,3 @@
-apiVersion: v1
-kind: Secret
-metadata:
-  name: keycloak-db-secret
-  namespace: loyality-net
-type: Opaque
-stringData:
-  db-username: loyalityuser
-  db-password: loyalitypass
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -25,29 +15,15 @@ spec:
     spec:
       containers:
         - name: keycloak
-          image: quay.io/keycloak/keycloak:26.0.5
-          args: ["start-dev"] # For development, remove for production
+          image: quay.io/keycloak/keycloak:24.0.1 # or your version
+          args: ["start-dev"] # dev mode to allow local bootstrap
+          env:
+            - name: KC_BOOTSTRAP_ADMIN_USERNAME
+              value: admin
+            - name: KC_BOOTSTRAP_ADMIN_PASSWORD
+              value: manage
           ports:
             - containerPort: 8080
-          env:
-            - name: KC_DB
-              value: postgres
-            - name: KC_DB_URL
-              value: jdbc:postgresql://postgres:5432/keycloakdb
-            - name: KC_DB_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: keycloak-db-secret
-                  key: db-username
-            - name: KC_DB_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: keycloak-db-secret
-                  key: db-password
-            - name: KC_HOSTNAME
-              value: keycloak.loyality-net.svc.cluster.local
-            - name: KC_HTTP_RELATIVE_PATH
-              value: /
 ---
 apiVersion: v1
 kind: Service
