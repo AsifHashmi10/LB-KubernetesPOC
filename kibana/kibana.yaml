@@ -22,9 +22,10 @@ spec:
             - name: ELASTICSEARCH_HOSTS
               value: "https://elasticsearch:9200"
             - name: ELASTICSEARCH_SERVICEACCOUNTTOKEN
-              value: "AAEAAWVsYXN0aWMva2liYW5hL2tpYmFuYS1zZXJ2aWNlLXRva2VuOkVSdGtEekFqUmppRlhoZWgxSGVXTXc"
+              value: "AAEAAWVsYXN0aWMva2liYW5hL2tpYmFuYS1zZXJ2aWNlOmxlRnF3ZmZHU18tMGJTNnNMV0FUN3c"
             - name: ELASTICSEARCH_SSL_VERIFICATIONMODE
               value: "none"
+
 ---
 apiVersion: v1
 kind: Service
