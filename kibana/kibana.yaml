@@ -20,7 +20,13 @@ spec:
             - containerPort: 5601
           env:
             - name: ELASTICSEARCH_HOSTS
-              value: "http://elasticsearch:9200"
+              value: "https://elasticsearch:9200"
+            - name: ELASTICSEARCH_USERNAME
+              value: "elastic"
+            - name: ELASTICSEARCH_PASSWORD
+              value: "manage" # make sure this matches ES
+            - name: ELASTICSEARCH_SSL_VERIFICATIONMODE
+              value: "none" # case-sensitive!
 ---
 apiVersion: v1
 kind: Service
