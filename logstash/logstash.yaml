@@ -38,16 +38,16 @@ data:
         port => 5044
       }
     }
-
     output {
       elasticsearch {
-        hosts => ["https://elasticsearch:9200"]
+        hosts => ["https://elasticsearch.loyality-net.svc.cluster.local:9200"]
         user => "elastic"
         password => "ZqYCrBsYu3kejHaaXYe1"
         ssl => true
         ssl_certificate_verification => false
       }
     }
+
 ---
 apiVersion: v1
 kind: Service
