@@ -15,15 +15,31 @@ spec:
     spec:
       containers:
         - name: keycloak
-          image: quay.io/keycloak/keycloak:24.0.1 # or your version
-          args: ["start-dev"] # dev mode to allow local bootstrap
+          image: quay.io/keycloak/keycloak:24.0.1
+          args: ["start"] # must use "start" (not start-dev) to support https
           env:
             - name: KC_BOOTSTRAP_ADMIN_USERNAME
               value: admin
             - name: KC_BOOTSTRAP_ADMIN_PASSWORD
               value: manage
+            - name: KC_HTTPS_CERTIFICATE_FILE
+              value: /etc/x509/https/tls.crt
+            - name: KC_HTTPS_CERTIFICATE_KEY_FILE
+              value: /etc/x509/https/tls.key
+            - name: KC_HOSTNAME_STRICT_HTTPS
+              value: "true"
+            - name: KC_HTTPS_PORT
+              value: "8081"
           ports:
-            - containerPort: 8080
+            - containerPort: 8081
+          volumeMounts:
+            - name: keycloak-tls
+              mountPath: /etc/x509/https
+              readOnly: true
+      volumes:
+        - name: keycloak-tls
+          secret:
+            secretName: keycloak-tls
 ---
 apiVersion: v1
 kind: Service
@@ -33,9 +49,9 @@ metadata:
 spec:
   type: NodePort
   selector:
-    app: keycloak # make sure this matches your Keycloak pod labels
+    app: keycloak
   ports:
-    - name: http
-      port: 8080
-      targetPort: 8080
-      nodePort: 30081 # choose a free port between 30000–32767
+    - name: https
+      port: 8081
+      targetPort: 8081
+      nodePort: 30081 # fixed external NodePort
