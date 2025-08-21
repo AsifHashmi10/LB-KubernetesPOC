@@ -25,30 +25,20 @@ spec:
               value: "AAEAAWVsYXN0aWMva2liYW5hL2tpYmFuYS1zZXJ2aWNlOmxlRnF3ZmZHU18tMGJTNnNMV0FUN3c"
             - name: ELASTICSEARCH_SSL_VERIFICATIONMODE
               value: "none"
-            - name: SERVER_HOST
-              value: "0.0.0.0" # Allows external access
-            - name: SERVER_PUBLICBASEURL
-              value: "http://172.20.150.17:30097" # Your Fedora IP with NodePort
-          readinessProbe:
-            httpGet:
-              path: /api/status
-              port: 5601
-            initialDelaySeconds: 30
-            periodSeconds: 10
-          livenessProbe:
-            httpGet:
-              path: /api/status
-              port: 5601
-            initialDelaySeconds: 60
-            periodSeconds: 30
-          resources:
-            requests:
-              memory: "512Mi"
-              cpu: "250m"
-            limits:
-              memory: "1Gi"
-              cpu: "500m"
-
+            - name: SERVER_SSL_ENABLED
+              value: "true"
+            - name: SERVER_SSL_CERTIFICATE
+              value: "/usr/share/kibana/config/certs/tls.crt"
+            - name: SERVER_SSL_KEY
+              value: "/usr/share/kibana/config/certs/tls.key"
+          volumeMounts:
+            - name: kibana-tls
+              mountPath: /usr/share/kibana/config/certs
+              readOnly: true
+      volumes:
+        - name: kibana-tls
+          secret:
+            secretName: kibana-tls
 ---
 apiVersion: v1
 kind: Service
@@ -56,10 +46,9 @@ metadata:
   name: kibana
   namespace: loyality-net
 spec:
-  type: NodePort # Explicitly set to NodePort for external access
   selector:
     app: kibana
   ports:
     - port: 5601
       targetPort: 5601
-      nodePort: 30097 # Fixed node port for consistency
+      protocol: TCP
