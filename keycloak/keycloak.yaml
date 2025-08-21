@@ -16,7 +16,7 @@ spec:
       containers:
         - name: keycloak
           image: quay.io/keycloak/keycloak:24.0.1
-          args: ["start"] # must use "start" (not start-dev) to support https
+          args: ["start"] # use "start", not "start-dev", for https
           env:
             - name: KC_BOOTSTRAP_ADMIN_USERNAME
               value: admin
@@ -26,18 +26,16 @@ spec:
               value: /etc/x509/https/tls.crt
             - name: KC_HTTPS_CERTIFICATE_KEY_FILE
               value: /etc/x509/https/tls.key
-            - name: KC_HOSTNAME_STRICT_HTTPS
-              value: "true"
-            - name: KC_HTTPS_PORT
-              value: "8081"
+            - name: KC_HOSTNAME
+              value: keycloak # or external hostname if you use ingress
           ports:
-            - containerPort: 8081
+            - containerPort: 8443
           volumeMounts:
-            - name: keycloak-tls
+            - name: tls-secret
               mountPath: /etc/x509/https
               readOnly: true
       volumes:
-        - name: keycloak-tls
+        - name: tls-secret
           secret:
             secretName: keycloak-tls
 ---
@@ -52,6 +50,6 @@ spec:
     app: keycloak
   ports:
     - name: https
-      port: 8081
-      targetPort: 8081
-      nodePort: 30081 # fixed external NodePort
+      port: 8443
+      targetPort: 8443
+      nodePort: 30443 # fixed NodePort for HTTPS
