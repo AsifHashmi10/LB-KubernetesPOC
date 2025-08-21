@@ -16,7 +16,7 @@ spec:
       containers:
         - name: keycloak
           image: quay.io/keycloak/keycloak:24.0.1
-          args: ["start"] # use "start", not "start-dev", for https
+          args: ["start"] # production HTTPS mode
           env:
             - name: KC_BOOTSTRAP_ADMIN_USERNAME
               value: admin
@@ -27,9 +27,9 @@ spec:
             - name: KC_HTTPS_CERTIFICATE_KEY_FILE
               value: /etc/x509/https/tls.key
             - name: KC_HOSTNAME
-              value: 192.168.49.2 # your minikube IP
+              value: keycloak # use service DNS name
             - name: KC_HOSTNAME_STRICT_HTTPS
-              value: "false"
+              value: "false" # allow flexibility in hostname
           ports:
             - containerPort: 8443
           volumeMounts:
