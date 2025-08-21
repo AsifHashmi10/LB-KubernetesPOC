@@ -16,26 +16,41 @@ spec:
       containers:
         - name: keycloak
           image: quay.io/keycloak/keycloak:24.0.1
-          args: ["start"] # production HTTPS mode
           env:
+            # Bootstrap admin
             - name: KC_BOOTSTRAP_ADMIN_USERNAME
               value: admin
             - name: KC_BOOTSTRAP_ADMIN_PASSWORD
               value: manage
+
+            # Database config
+            - name: KC_DB
+              value: postgres
+            - name: KC_DB_URL
+              value: jdbc:postgresql://postgres:5432/keycloakdb
+            - name: KC_DB_USERNAME
+              value: loyalityuser
+            - name: KC_DB_PASSWORD
+              value: loyalitypass
+
+            # HTTPS settings
             - name: KC_HTTPS_CERTIFICATE_FILE
               value: /etc/x509/https/tls.crt
             - name: KC_HTTPS_CERTIFICATE_KEY_FILE
               value: /etc/x509/https/tls.key
             - name: KC_HOSTNAME
-              value: keycloak # use service DNS name
+              value: keycloak
             - name: KC_HOSTNAME_STRICT_HTTPS
-              value: "false" # allow flexibility in hostname
+              value: "false"
+
           ports:
             - containerPort: 8443
+
           volumeMounts:
             - name: tls-secret
               mountPath: /etc/x509/https
               readOnly: true
+
       volumes:
         - name: tls-secret
           secret:
@@ -54,4 +69,4 @@ spec:
     - name: https
       port: 8443
       targetPort: 8443
-      nodePort: 30443 # fixed NodePort for HTTPS
+      nodePort: 30443
