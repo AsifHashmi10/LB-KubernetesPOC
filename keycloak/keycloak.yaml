@@ -27,7 +27,9 @@ spec:
             - name: KC_HTTPS_CERTIFICATE_KEY_FILE
               value: /etc/x509/https/tls.key
             - name: KC_HOSTNAME
-              value: keycloak # or external hostname if you use ingress
+              value: 192.168.49.2 # your minikube IP
+            - name: KC_HOSTNAME_STRICT_HTTPS
+              value: "false"
           ports:
             - containerPort: 8443
           volumeMounts:
