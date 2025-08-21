@@ -1,0 +1,39 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: keycloak-db
+    environment:
+      POSTGRES_DB: keycloak # Database Keycloak will use
+      POSTGRES_USER: lpadmin
+      POSTGRES_PASSWORD: password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lpadmin -d keycloak"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0.0
+    container_name: keycloak
+    command: start-dev
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres:5432/keycloak
+      KC_DB_USERNAME: lpadmin
+      KC_DB_PASSWORD: password
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: password
+    ports:
+      - "9191:8080" # Host port 9191
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: always
+
+volumes:
+  postgres_data:
