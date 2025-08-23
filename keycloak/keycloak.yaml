@@ -1,3 +1,6 @@
+# ------------------------
+# Keycloak Deployment
+# ------------------------
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -16,19 +19,21 @@ spec:
       containers:
         - name: keycloak
           image: quay.io/keycloak/keycloak:24.0.1
-          args: ["start"] # 👈 important for Quarkus
+          args: ["start"] # Required for Quarkus-based Keycloak
           env:
-            # Bootstrap admin
+            # Bootstrap admin user
             - name: KC_BOOTSTRAP_ADMIN_USERNAME
               value: admin
             - name: KC_BOOTSTRAP_ADMIN_PASSWORD
               value: manage
 
-            # Database config
+            # Database config (matches Postgres above)
             - name: KC_DB
               value: postgres
-            - name: KC_DB_URL
-              value: jdbc:postgresql://postgres:5432/keycloakdb
+            - name: KC_DB_URL_HOST
+              value: postgres
+            - name: KC_DB_URL_DATABASE
+              value: keycloakdb
             - name: KC_DB_USERNAME
               value: loyalityuser
             - name: KC_DB_PASSWORD
@@ -57,6 +62,9 @@ spec:
           secret:
             secretName: keycloak-tls
 ---
+# ------------------------
+# Keycloak Service
+# ------------------------
 apiVersion: v1
 kind: Service
 metadata:

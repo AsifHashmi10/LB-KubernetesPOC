@@ -1,3 +1,6 @@
+# ------------------------
+# Persistent Volume Claim for Postgres
+# ------------------------
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -10,6 +13,9 @@ spec:
     requests:
       storage: 5Gi
 ---
+# ------------------------
+# Postgres Deployment
+# ------------------------
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -40,11 +46,19 @@ spec:
           volumeMounts:
             - mountPath: /var/lib/postgresql/data
               name: postgres-storage
+          readinessProbe:
+            exec:
+              command: ["pg_isready", "-U", "loyalityuser"]
+            initialDelaySeconds: 10
+            periodSeconds: 5
       volumes:
         - name: postgres-storage
           persistentVolumeClaim:
             claimName: postgres-pvc
 ---
+# ------------------------
+# Postgres Service
+# ------------------------
 apiVersion: v1
 kind: Service
 metadata:
