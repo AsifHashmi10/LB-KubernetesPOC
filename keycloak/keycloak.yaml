@@ -19,7 +19,7 @@ spec:
       containers:
         - name: keycloak
           image: quay.io/keycloak/keycloak:24.0.1
-          args: ["start"] # Required for Quarkus-based Keycloak
+          args: ["start"] 
           env:
             # Bootstrap admin user
             - name: KC_BOOTSTRAP_ADMIN_USERNAME
@@ -31,9 +31,7 @@ spec:
             - name: KC_DB
               value: postgres
             - name: KC_DB_URL_HOST
-              value: postgres
-            - name: KC_DB_URL_PORT
-              value: "5432"
+              value: keycloak-db   # <-- change this to your Postgres service name
             - name: KC_DB_URL_DATABASE
               value: keycloakdb
             - name: KC_DB_USERNAME
