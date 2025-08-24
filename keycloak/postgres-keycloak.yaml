@@ -1,4 +1,78 @@
 # ------------------------
+# Persistent Volume Claim for Postgres
+# ------------------------
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pvc
+  namespace: loyality-net
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+---
+# ------------------------
+# Postgres Deployment
+# ------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+  namespace: loyality-net
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              value: keycloakdb
+            - name: POSTGRES_USER
+              value: loyalityuser
+            - name: POSTGRES_PASSWORD
+              value: loyalitypass
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: postgres-storage
+          readinessProbe:
+            exec:
+              command: ["pg_isready", "-U", "loyalityuser"]
+            initialDelaySeconds: 10
+            periodSeconds: 5
+      volumes:
+        - name: postgres-storage
+          persistentVolumeClaim:
+            claimName: postgres-pvc
+---
+# ------------------------
+# Postgres Service
+# ------------------------
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: loyality-net
+spec:
+  selector:
+    app: postgres
+  ports:
+    - port: 5432
+      targetPort: 5432
+  type: ClusterIP
+---
+# ------------------------
 # Keycloak Deployment
 # ------------------------
 apiVersion: apps/v1
@@ -19,7 +93,7 @@ spec:
       containers:
         - name: keycloak
           image: quay.io/keycloak/keycloak:24.0.1
-          args: ["start"] 
+          args: ["start"]   # Required for Quarkus-based Keycloak
           env:
             # Bootstrap admin user
             - name: KC_BOOTSTRAP_ADMIN_USERNAME
@@ -31,7 +105,7 @@ spec:
             - name: KC_DB
               value: postgres
             - name: KC_DB_URL_HOST
-              value: keycloak
+              value: postgres
             - name: KC_DB_URL_DATABASE
               value: keycloakdb
             - name: KC_DB_USERNAME
@@ -45,9 +119,12 @@ spec:
             - name: KC_HTTPS_CERTIFICATE_KEY_FILE
               value: /etc/x509/https/tls.key
             - name: KC_HOSTNAME
-              value: keycloak
+              value: localhost
+            - name: KC_HOSTNAME_STRICT
+              value: "false"
             - name: KC_HOSTNAME_STRICT_HTTPS
               value: "false"
+
 
           ports:
             - containerPort: 8443
@@ -79,3 +156,4 @@ spec:
       port: 8443
       targetPort: 8443
       nodePort: 30443
+
