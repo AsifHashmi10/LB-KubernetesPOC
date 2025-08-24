@@ -32,4 +32,4 @@ spec:
     - name: http
       port: 80
       targetPort: 80
-      nodePort: 30080 # fixed NodePort bound on Fedora VM
+      nodePort: 30005 # fixed NodePort bound on Fedora VM
